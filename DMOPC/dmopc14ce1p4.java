@@ -1,6 +1,15 @@
 package Unit2;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.PriorityQueue;
+import java.util.StringTokenizer;
 public class dmopc14ce1p4 {
 	public static class Edge {
 		int ev;
@@ -54,19 +63,8 @@ public class dmopc14ce1p4 {
 			length = readInt();
 			speed = readInt();
 			kpm = (length / speed) * 60;
-			for (int j = 0; j < a[c1].size(); j++) {
-				if (a[c1].get(j).ev == c2 && a[c1].get(j).cost > kpm) {
-					a[c1].get(j).cost = kpm;
-					flag = true;
-				}
-				else if (a[c1].get(j).ev == c2 && a[c1].get(j).cost < kpm) {
-					flag = true;
-				}
-			}
-			if (!flag) {
-				a[c1].add(new Edge(c2, kpm));
-				a[c2].add(new Edge(c1, kpm));
-			}
+			a[c1].add(new Edge(c2, kpm));
+			a[c2].add(new Edge(c1, kpm));
 		}
 		// for (int i = 0; i < a.length; i++) {
 		// for (int j = 0; j < a[i].size(); j++) {
@@ -111,8 +109,7 @@ public class dmopc14ce1p4 {
 			ArrayList<Edge> neighbour = a[cur.v];
 			for (int i = 0; i < neighbour.size(); i++) {
 				Edge e = neighbour.get(i);
-				if ((step[e.ev] > step[cur.v] + e.cost)
-						|| (step[e.ev] == step[cur.v] + e.cost && step2[e.ev] > step2[cur.v] + 1)) {
+				if ((step[e.ev] > step[cur.v] + e.cost)) {
 					step[e.ev] = step[cur.v] + e.cost;
 					step2[e.ev] = step2[cur.v] + 1;
 					parents[e.ev] = cur.v;
@@ -159,8 +156,7 @@ public class dmopc14ce1p4 {
 		do {
 			ret[idx++] = c;
 			c = Read();
-		}
-		while (c != -1 && c != ' ' && c != '\n' && c != '\r');
+		} while (c != -1 && c != ' ' && c != '\n' && c != '\r');
 		return new String(ret, 0, idx);
 	}
 
@@ -174,8 +170,7 @@ public class dmopc14ce1p4 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (neg)
 			return -ret;
@@ -192,8 +187,7 @@ public class dmopc14ce1p4 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 		if (neg)
 			return -ret;
 		return ret;
@@ -210,8 +204,7 @@ public class dmopc14ce1p4 {
 
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (c == '.') {
 			while ((c = Read()) >= '0' && c <= '9') {
