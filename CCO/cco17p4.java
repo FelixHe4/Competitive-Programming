@@ -1,6 +1,14 @@
 package Unit2;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.StringTokenizer;
 public class cco17p4 {
 
 	public static void main(String[] args) throws IOException {
@@ -10,24 +18,31 @@ public class cco17p4 {
 			heights[i] = readInt();
 		}
 		Arrays.sort(heights, Collections.reverseOrder());
-		int[][] dp = new int[n + 5][n + 5];
-		for (int i = 2; i < n; i++) {
+		boolean[][] dp = new boolean[n + 5][51];
+		for (int i = 1; i < n; i++) {
 			for (int j = i; j >= 1; j--) {
-				dp[heights[i]][heights[j] - heights[i]]++;
+				dp[i][heights[j] - heights[i]] = true;
 			}
 		}
-		boolean[] dp1 = new boolean[n + 100];
-		dp1[0] = true;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++) {
-				for (int k = i; k < n; k++) {
-					if ((dp[j][k] == 1) && (dp[i][j] == 1)) {
-						dp1[j + k] = true;
+		boolean[][] dp1 = new boolean[n + 100][n * 50 + 5];
+		dp1[0][0] = true;
+		for (int i = 1; i < n; i++) {
+			for (int j = 0; j <= 50; j++) {
+				if (!dp[i][j]) {
+					continue;
+				}
+				for (int k = 0; k <= n * 50; k++) {
+					if (dp1[i - 1][k] && dp[i][j]) {
+						dp1[i][j + k] = true;
 					}
 				}
 			}
 		}
-		System.out.println(Arrays.toString(dp1));
+		for (int i = 0; i <= n * 50; i++) {
+			if (dp1[n - 1][i]) {
+				System.out.print(i + " ");
+			}
+		}
 	}
 
 	final private static int BufferS = 1 << 16;
@@ -65,8 +80,7 @@ public class cco17p4 {
 		do {
 			ret[idx++] = c;
 			c = Read();
-		}
-		while (c != -1 && c != ' ' && c != '\n' && c != '\r');
+		} while (c != -1 && c != ' ' && c != '\n' && c != '\r');
 		return new String(ret, 0, idx);
 	}
 
@@ -80,8 +94,7 @@ public class cco17p4 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (neg)
 			return -ret;
@@ -98,8 +111,7 @@ public class cco17p4 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 		if (neg)
 			return -ret;
 		return ret;
@@ -116,8 +128,7 @@ public class cco17p4 {
 
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (c == '.') {
 			while ((c = Read()) >= '0' && c <= '9') {
