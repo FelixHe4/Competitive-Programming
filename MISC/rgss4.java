@@ -6,28 +6,28 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
-public class rgss1 {
-	public static final long N = 2;
-
+public class rgss4 {
 	public static void main(String[] args) throws IOException {
-		int x = readInt();
-		int y = readInt();
-		int w = readInt();
-		int[] dp = new int[w + 1];
-		for (int i = 0; i <= w; i++) {
-			for (int j = 0; j < N; j++) {
-				if (j % 2 == 0) {
-					if (i >= x) {
-						dp[i] = Math.max(dp[i], dp[i - x] + x);
-					}
-				} else {
-					if (i >= y) {
-						dp[i] = Math.max(dp[i], dp[i - y] + y);
-					}
+		int n = readInt();
+		int[] arr = new int[n];
+		int[] mis = new int[n];
+		for (int i = 0; i < n; i++) {
+			arr[i] = readInt();
+			mis[i] = arr[i];
+		}
+		for (int i = 1; i < n; i++) {
+			for (int j = 0; j < i; j++) {
+				if (arr[i] > arr[j] && mis[i] < mis[j] + arr[i]) {
+					mis[i] = mis[j] + arr[i];
 				}
 			}
 		}
-		System.out.println(dp[w]);
+		int max = 0;
+		for (int i : mis) {
+			max = Math.max(i, max);
+		}
+		println(max);
+		exit();
 	}
 
 	final private static int BUFFER_SIZE = 1 << 16;
@@ -37,7 +37,7 @@ public class rgss1 {
 	static PrintWriter pr = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
 
 	public static String readLine() throws IOException {
-		byte[] buf = new byte[1000000]; // line length
+		byte[] buf = new byte[64]; // line length
 		int cnt = 0, c;
 		while ((c = Read()) != -1) {
 			if (c == '\n')
