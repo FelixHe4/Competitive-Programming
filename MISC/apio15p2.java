@@ -5,44 +5,71 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
 public class apio15p2 {
 	static class Pair implements Comparable<Pair> {
-		int s, j;
+		int ev, cost;
 
-		public Pair(int s0, int j0) {
-			s = s0;
-			j = j0;
+		public Pair(int ev, int cost) {
+			this.ev = ev;
+			this.cost = cost;
+
 		}
 
 		public int compareTo(Pair o) {
-			return j - o.j;
+			return cost - o.cost;
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 		int n = readInt(), m = readInt();
-		Pair[] Pair = new Pair[m];
-		int startJ = 0;
+		ArrayList<Integer>[] aaa = new ArrayList[n + 1];
+		for (int i = 0; i < aaa.length; i++) {
+			aaa[i] = new ArrayList<Integer>();
+		}
+		int startJ = 0, endJ = 0;
 		for (int i = 0; i < m; i++) {
-			int a = readInt(), b = readInt();
-			if (a == 0) {
-				startJ = b;
+			int c1 = readInt(), c2 = readInt();
+			if (i == 0) {
+				startJ = c1;
 			}
-			Pair[i] = new Pair(a, b);
+			if (i == 1) {
+				endJ = c1;
+			}
+			aaa[c1].add(c2);
 		}
 		PriorityQueue<Pair> q = new PriorityQueue<Pair>();
-		q.add(new Pair(0, startJ));
-		int[] step = new int[n - 1];
+		q.add(new Pair(startJ, 0));
+		int[] step = new int[n];
 		Arrays.fill(step, Integer.MAX_VALUE);
+		step[startJ] = 0;
 		while (!q.isEmpty()) {
 			Pair cur = q.poll();
-			for (int i = 0; i < Pair.length; i++) {
-
+			for (int i : aaa[cur.ev]) {
+				int count = 0;
+				for (int j = cur.ev + i; j < n; j += i) {
+					count++;
+					if (step[j] > step[cur.ev] + count) {
+						step[j] = step[cur.ev] + count;
+						q.add(new Pair(j, step[j]));
+					}
+				}
+				count = 0;
+				for (int j = cur.ev - i; j >= 0; j -= i) {
+					count++;
+					if (step[j] > step[cur.ev] + count) {
+						step[j] = step[cur.ev] + count;
+						q.add(new Pair(j, step[j]));
+					}
+				}
 			}
 		}
+		System.out.println(Arrays.toString(step));
+		System.out.println(step[endJ] == Integer.MAX_VALUE ? -1 : step[endJ]);
 	}
 
 	final private static int BUFFER_SIZE = 1 << 16;
