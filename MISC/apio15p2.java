@@ -5,9 +5,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.PriorityQueue;
+import java.util.TreeSet;
 
 public class apio15p2 {
 	static class Pair implements Comparable<Pair> {
@@ -27,9 +27,9 @@ public class apio15p2 {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) throws IOException {
 		int n = readInt(), m = readInt();
-		ArrayList<Integer>[] aaa = new ArrayList[n + 1];
+		TreeSet<Integer>[] aaa = new TreeSet[n + 1];
 		for (int i = 0; i < aaa.length; i++) {
-			aaa[i] = new ArrayList<Integer>();
+			aaa[i] = new TreeSet<Integer>();
 		}
 		int startJ = 0, endJ = 0;
 		for (int i = 0; i < m; i++) {
@@ -42,6 +42,9 @@ public class apio15p2 {
 			}
 			aaa[c1].add(c2);
 		}
+//		for (int i = 0; i < n + 1; i++) {
+//			Collections.sort(aaa[i]);
+//		}
 		PriorityQueue<Pair> q = new PriorityQueue<Pair>();
 		q.add(new Pair(startJ, 0));
 		int[] step = new int[n];
@@ -49,6 +52,12 @@ public class apio15p2 {
 		step[startJ] = 0;
 		while (!q.isEmpty()) {
 			Pair cur = q.poll();
+			if (cur.cost > step[cur.ev]) {
+				continue;
+			}
+			if (cur.ev == endJ) {
+				break;
+			}
 			for (int i : aaa[cur.ev]) {
 				int count = 0;
 				for (int j = cur.ev + i; j < n; j += i) {
@@ -57,6 +66,26 @@ public class apio15p2 {
 						step[j] = step[cur.ev] + count;
 						q.add(new Pair(j, step[j]));
 					}
+//					Set<Integer> hecc = new TreeSet<Integer>(aaa[j]);
+					if (aaa[j].contains(i)) {
+						break;
+					}
+//					int low = 0, high = aaa[j].size() - 1, mid = 0;
+//					boolean flag = true;
+//					while (low <= high) {
+//						mid = (low + high) / 2;
+//						if (aaa[j].get(mid) == i) {
+//							flag = false;
+//							break;
+//						} else if (aaa[j].get(mid) > i) {
+//							high = mid - 1;
+//						} else {
+//							low = mid + 1;
+//						}
+//					}
+//					if (!flag) {
+//						break;
+//					}
 				}
 				count = 0;
 				for (int j = cur.ev - i; j >= 0; j -= i) {
@@ -65,10 +94,30 @@ public class apio15p2 {
 						step[j] = step[cur.ev] + count;
 						q.add(new Pair(j, step[j]));
 					}
+					// Set<Integer> hecc = new TreeSet<Integer>(aaa[j]);
+					if (aaa[j].contains(i)) {
+						break;
+					}
+//					int low = 0, high = aaa[j].size() - 1, mid = 0;
+//					boolean flag = true;
+//					while (low <= high) {
+//						mid = (low + high) / 2;
+//						if (aaa[j].get(mid) == i) {
+//							flag = false;
+//							break;
+//						} else if (aaa[j].get(mid) > i) {
+//							high = mid - 1;
+//						} else {
+//							low = mid + 1;
+//						}
+//					}
+//					if (!flag) {
+//						break;
+//					}
 				}
 			}
 		}
-		System.out.println(Arrays.toString(step));
+		// System.out.println(Arrays.toString(step));
 		System.out.println(step[endJ] == Integer.MAX_VALUE ? -1 : step[endJ]);
 	}
 
