@@ -15,40 +15,6 @@ public class LKP2P3 {
 		}
 	}
 
-	static class Triangle {
-		public double x3, y3;
-		public double ya, xa, yb, xb;
-		public double det, minD, maxD;
-
-		public Triangle(double x1, double y1, double x2, double y2, double x3, double y3) {
-			this.x3 = x3;
-			this.y3 = y3;
-			ya = y2 - y3;
-			xa = x3 - x2;
-			yb = y3 - y1;
-			xb = x1 - x3;
-			det = ya * xb - xa * yb;
-			minD = Math.min(det, 0);
-			maxD = Math.max(det, 0);
-		}
-
-		boolean contains(double x, double y) {
-			double dx = x - x3;
-			double dy = y - y3;
-			double a = ya * dx + xa * dy;
-			if (a < minD || a > maxD)
-				return false;
-			double b = yb * dx + xb * dy;
-			if (b < minD || b > maxD)
-				return false;
-			double c = det - a - b;
-			if (c < minD || c > maxD)
-				return false;
-			return true;
-		}
-
-	}
-
 	public static void main(String[] args) throws IOException {
 		int n = readInt(), m = readInt();
 		Pair[] Pair = new Pair[n];
@@ -56,44 +22,31 @@ public class LKP2P3 {
 			Pair[i] = new Pair(readInt(), readInt());
 		}
 		for (int i = 0; i < m; i++) {
-			Triangle z = new Triangle(readInt(), readInt(), readInt(), readInt(), readInt(), readInt());
+			long x1 = readLong(), y1 = readLong(), x2 = readLong(), y2 = readLong(), x3 = readLong(), y3 = readLong();
 			long count = 0;
 			for (int j = 0; j < n; j++) {
-				// spent the entire time debugging because my Pair[j] was Pair[i];
-				if (z.contains(Pair[j].x, Pair[j].y)) {
+				if (inside(x1, y1, x2, y2, x3, y3, Pair[j].x, Pair[j].y)) {
 					count++;
 				}
 			}
-			println(count);
+			System.out.println(count);
 		}
-		exit();
-	}
-//
-//	public static boolean onLine(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y) {
-//		double slope1 = (y2 - y1) / (x2 - x1);
-//		double b1 = y2 - (slope1 * x2);
-//		boolean flag1 = (x * slope1 + b1) == y;
-//		double slope2 = (y3 - y1) / (x3 - x1);
-//		double b2 = y3 - (slope1 * x3);
-//		boolean flag2 = (x * slope2 + b2) == y;
-//		double slope3 = (y3 - y2) / (x3 - x2);
-//		double b3 = y3 - (slope1 * x3);
-//		boolean flag3 = (x * slope3 + b3) == y;
-//		return flag1 || flag2 || flag3;
-//	}
-
-	public static double calculateArea(int x1, int y1, int x2, int y2, int x3, int y3) {
-		return (x1 - x3) * (y2 - y3) - (x2 - x3) * (y1 - y3);
 	}
 
-	public static boolean inside(int x1, int y1, int x2, int y2, int x3, int y3, int x, int y) {
-		double s = y1 * x3 - x1 * y3 + (y3 - y1) * x + (x1 - x3) * y;
-		double t = x1 * y2 - y1 * x2 + (y1 - y2) * x + (x2 - x1) * y;
-		if ((s < 0) != (t < 0)) {
+	public static double calculateArea(long x1, long y1, long x2, long y2, long x3, long y3) {
+		return Math.abs((double) (x1 * (y2 - y3) + x2 * (y3 - y1) + x3 * (y1 - y2)) / 2.0);
+	}
+
+	public static boolean inside(long x1, long y1, long x2, long y2, long x3, long y3, long x, long y) {
+		double z = calculateArea(x1, y1, x2, y2, x3, y3);
+		double a = calculateArea(x, y, x2, y2, x3, y3);
+		double b = calculateArea(x1, y1, x, y, x3, y3);
+		double c = calculateArea(x1, y1, x2, y2, x, y);
+		if (Math.abs(a + b + c) - z <= 0.1) {
+			return true;
+		} else {
 			return false;
 		}
-		double A = -y2 * x3 + y1 * (x3 - x2) + x1 * (y2 - y3) + x2 * y3;
-		return s > 0 && t > 0 && (s + t) <= A;
 	}
 
 	final private static int BUFFER_SIZE = 1 << 16;
