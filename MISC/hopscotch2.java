@@ -1,6 +1,14 @@
 package Unit2;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayDeque;
+import java.util.Stack;
+import java.util.StringTokenizer;
 public class hopscotch2 {
 	static class Pair {
 		long pos, val;
@@ -12,39 +20,45 @@ public class hopscotch2 {
 	}
 
 	public static void main(String[] args) throws IOException {
-		long n = readInt();
-		long k = readInt();
-		long[] vals = new long[(int) n + 1];
-		long[] prev = new long[(int) n + 1];
+		long n = readLong();
+		long k = readLong();
+		long[] vals = new long[(int) n + 5];
+		long[] prev = new long[(int) n + 5];
 		Stack<Long> st = new Stack<Long>();
 		ArrayDeque<Pair> ad = new ArrayDeque<Pair>();
 		ad.push(new Pair(0, 0));
-		int x;
 		for (int i = 1; i <= n; i++) {
-			if (i <= n) {
-				x = readInt();
-			}
-			else {
-				x = 0;
-			}
-			vals[i] = readInt();
-			while (!ad.isEmpty() && i - ad.peekFirst().pos > k) {
-				ad.pop();
+			long x = readLong();
+			// vals[i] = x;
+			while (ad.peekFirst().pos < i - k) {
+				// System.out.println(ad.peekFirst().pos);
+				ad.pollFirst();
 			}
 			prev[i] = ad.peekFirst().pos;
-			long val = ad.peek().val + x;
+			long val = ad.peekFirst().val + x;
+			vals[i] = val;
 			while (!ad.isEmpty() && val <= ad.peekLast().val) {
 				ad.pollLast();
 			}
-			ad.push(new Pair(val, i));
+			ad.add(new Pair(i, val));
+			// System.out.println(ad.peekLast().pos + " " + ad.peekLast().val);
 		}
-		print(ad.peekLast().val);
-		for (int i = (int) (n + 1); prev[i] != 0; i = (int) prev[i]) {
-			st.push(prev[i]);
+		// System.out.println(Arrays.toString(prev));
+		long min = Long.MAX_VALUE;
+		long index = -1;
+		for (int i = (int) (n - k + 1) + 1; i <= n; i++) {
+			if (vals[i] <= min) {
+				min = vals[i];
+				index = i;
+			}
 		}
-		while (!st.isEmpty()) {
-			System.out.println(st.peek());
-			st.pop();
+		while (index != 0 && index != -1) {
+			st.push(index);
+			index = prev[(int) index];
+		}
+		System.out.println(min);
+		for (int i = st.size() - 1; i >= 0; i--) {
+			System.out.print(st.pop() + " ");
 		}
 	}
 
@@ -83,8 +97,7 @@ public class hopscotch2 {
 		do {
 			ret[idx++] = c;
 			c = Read();
-		}
-		while (c != -1 && c != ' ' && c != '\n' && c != '\r');
+		} while (c != -1 && c != ' ' && c != '\n' && c != '\r');
 		return new String(ret, 0, idx);
 	}
 
@@ -98,8 +111,7 @@ public class hopscotch2 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (neg)
 			return -ret;
@@ -116,8 +128,7 @@ public class hopscotch2 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 		if (neg)
 			return -ret;
 		return ret;
@@ -134,8 +145,7 @@ public class hopscotch2 {
 
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (c == '.') {
 			while ((c = Read()) >= '0' && c <= '9') {
