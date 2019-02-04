@@ -1,6 +1,14 @@
 package Unit1;
-import java.io.*;
-import java.util.*;
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.StringTokenizer;
 public class ccc06s3 {
 
 	public static void main(String[] args) throws IOException {
@@ -9,6 +17,23 @@ public class ccc06s3 {
 		int xJ = readInt();
 		int yJ = readInt();
 		int n = readInt();
+		Line2D Line = new Line2D.Double(xR, yR, xJ, yJ);
+		int count = 0;
+		while (n-- > 0) {
+			int z = readInt();
+			Point2D[] polyPoints = new Point2D[z];
+			for (int i = 0; i < z; i++) {
+				polyPoints[i] = new Point2D.Double(readInt(), readInt());
+			}
+			for (int i = 0; i < polyPoints.length - 1; i++) {
+				if (Line.intersectsLine(polyPoints[i].getX(), polyPoints[i].getY(), polyPoints[i + 1].getX(), polyPoints[i + 1].getY())) {
+					count++;
+					break;
+				}
+			}
+		}
+		println(count);
+		exit();
 	}
 
 	final private static int BufferS = 1 << 16;
@@ -46,8 +71,7 @@ public class ccc06s3 {
 		do {
 			ret[idx++] = c;
 			c = Read();
-		}
-		while (c != -1 && c != ' ' && c != '\n' && c != '\r');
+		} while (c != -1 && c != ' ' && c != '\n' && c != '\r');
 		return new String(ret, 0, idx);
 	}
 
@@ -61,8 +85,7 @@ public class ccc06s3 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (neg)
 			return -ret;
@@ -79,8 +102,7 @@ public class ccc06s3 {
 			c = Read();
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 		if (neg)
 			return -ret;
 		return ret;
@@ -97,8 +119,7 @@ public class ccc06s3 {
 
 		do {
 			ret = ret * 10 + c - '0';
-		}
-		while ((c = Read()) >= '0' && c <= '9');
+		} while ((c = Read()) >= '0' && c <= '9');
 
 		if (c == '.') {
 			while ((c = Read()) >= '0' && c <= '9') {
