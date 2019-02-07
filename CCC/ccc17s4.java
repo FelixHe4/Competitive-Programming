@@ -1,129 +1,245 @@
 package Unit1;
-import java.util.*;
+
+import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.Arrays;
+
 public class ccc17s4 {
-	int V;
-	int E;
-	Edge[] edge;
-	Edge[] mst;
-	int[] parent;
+	public static class Edge implements Comparable<Edge> {
+		int bv, ev, cost, active;
 
-	public class Edge implements Comparable<Edge> {
-		int bv;
-		int ev;
-		int cost;
-		int active;
+		public Edge(int bv, int ev, int cost, int active) {
+			this.bv = bv;
+			this.ev = ev;
+			this.cost = cost;
+			this.active = active;
+		}
 
-		@Override
 		public int compareTo(Edge o) {
-			if (this.cost < o.cost) {
-				return -1;
-			} else if (this.cost > o.cost) {
-				return 1;
-			} else {
-				if (this.active < o.active) {
-					return -1;
-				} else if (this.active > o.active) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-		}
-
-	}
-
-	public ccc17s4(int v, int e) {
-		V = v;
-		E = e;
-		edge = new Edge[E];
-		for (int i = 0; i < E; i++) {
-			edge[i] = new Edge();
-		}
-
-		parent = new int[V];
-		for (int i = 0; i < V; i++) {
-			parent[i] = -1;
-		}
-
-		mst = new Edge[V - 1];
-		for (int i = 0; i < V - 1; i++) {
-			mst[i] = new Edge();
+			return cost - o.cost == 0 ? active - o.active : cost - o.cost;
 		}
 	}
 
-	public int find(int v) {
-		if (parent[v] == -1) {
-			return v;
+	static int find(int n) {
+		if (dsu[n] == n) {
+			return n;
 		} else {
-			return parent[v] = find(parent[v]);
+			return dsu[n] = find(dsu[n]);
 		}
 	}
 
-	public void union(int pb, int pe) {
-		parent[pb] = pe;
-	}
+	static Edge[] Edge;
+	static int[] dsu, rank;
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt(); // city vertices
-		int M = sc.nextInt(); // pipe edges
-		int D = sc.nextInt();
-		ccc17s4 graph = new ccc17s4(N, M);
-		for (int i = 0; i < M; i++) {
-			graph.edge[i].bv = sc.nextInt() - 1;
-			graph.edge[i].ev = sc.nextInt() - 1;
-			graph.edge[i].cost = sc.nextInt();
-			if (i < N - 1) {
-				graph.edge[i].active = 0;
+	public static void main(String[] args) throws IOException {
+		int n = readInt(), m = readInt(), d = readInt();
+		Edge = new Edge[m];
+		dsu = new int[n + 1];
+		rank = new int[n + 1];
+		for (int i = 0; i < dsu.length; i++) {
+			dsu[i] = i;
+		}
+		for (int i = 0; i < m; i++) {
+			int c1 = readInt(), c2 = readInt(), cost = readInt();
+			if (i < n - 1) {
+				Edge[i] = new Edge(c1, c2, cost, 0);
 			} else {
-				graph.edge[i].active = 1;
+				Edge[i] = new Edge(c1, c2, cost, 1);
 			}
 		}
-		Arrays.sort(graph.edge);
-		int j = 0;
-		int day = 0;
-		int max = 0;
-		int maxn = 0;
-		for (int i = 0; i < M; i++) {
-			int bv = graph.edge[i].bv;
-			int ev = graph.edge[i].ev;
-			int pb = graph.find(bv);
-			int pe = graph.find(ev);
-			if (pb != pe) {
-				graph.union(pb, pe);
-				graph.mst[j].bv = bv;
-				graph.mst[j].ev = ev;
-				graph.mst[j].cost = graph.edge[i].cost;
-				graph.mst[j].active = graph.edge[i].active;
-				day = day + graph.mst[j].active;
-				max = graph.mst[j].cost;
-				maxn = graph.mst[j].active;
-				j++;
+		Arrays.sort(Edge);
+		int days = 0;
+		int curM = 0;
+		int curA = 0;
+		int maxC = Integer.MIN_VALUE;
+		for (Edge e : Edge) {
+			if (curM == n - 1) {
+				break;
+			}
+			int bv = e.bv, ev = e.ev, c = e.cost, active = e.active;
+			int fa = find(bv);
+			int fb = find(ev);
+			if (fa != fb) {
+				if (rank[fa] > rank[fb]) {
+					dsu[fb] = fa;
+				} else {
+					dsu[fa] = fb;
+					if (rank[fa] == rank[fb]) {
+						rank[fb]++;
+					}
+				}
+				maxC = c;
+				curM++;
+				days += active;
+				curA = active;
 			}
 		}
-		if (maxn == 1) {
-			for (int i = 0; i < N; i++) {
-				graph.parent[i] = -1;
+		if (curA == 1) {
+			// if the biggest weight tube is currently not being used
+			for (int i = 0; i < dsu.length; i++) {
+				dsu[i] = i;
 			}
-			for (int i = 0; i < M; i++) {
-				int cost = graph.edge[i].cost;
-				int bv = graph.edge[i].bv;
-				int ev = graph.edge[i].ev;
-				int pb = graph.find(bv);
-				int pe = graph.find(ev);
-				if (pb != pe) {
-					if (cost < max || cost == max && graph.edge[i].active == 0) {
-						graph.union(pb, pe);
-					} else if (graph.edge[i].active == 0 && cost - D <= 0) {
-						day--;
+			rank = new int[n + 1];
+			for (Edge e : Edge) {
+				int bv = e.bv;
+				int ev = e.ev;
+				int cost = e.cost;
+				int fa = find(bv);
+				int fb = find(ev);
+				if (fa != fb) {
+					if (cost < maxC || cost == maxC && e.active == 0) {
+						// cost is less than the largest tube's cost or
+						// cost is the max tube and the max tube is being used
+						// add it to the disjoint set
+						if (rank[fa] > rank[fb]) {
+							dsu[fb] = fa;
+						} else {
+							dsu[fa] = fb;
+							if (rank[fa] == rank[fb]) {
+								rank[fb]++;
+							}
+						}
+					} else if (e.active == 0 && cost - d <= 0) {
+						// if the tube is being used and if the cost of the tube subtract the super tube is less than 0, that means use the
+						// super tube. this means we use the tube and reduce days by 1.
+						days--;
 						break;
 					}
-
 				}
 			}
-		}
-		System.out.println(day);
 
+		}
+		System.out.println(days);
+	}
+
+	final private static int BUFFER_SIZE = 1 << 16;
+	private static DataInputStream din = new DataInputStream(System.in);
+	private static byte[] buffer = new byte[BUFFER_SIZE];
+	private static int bufferPointer = 0, bytesRead = 0;
+	static PrintWriter pr = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+
+	public static String readLine() throws IOException {
+		byte[] buf = new byte[64]; // line length
+		int cnt = 0, c;
+		while ((c = Read()) != -1) {
+			if (c == '\n')
+				break;
+			buf[cnt++] = (byte) c;
+		}
+		return new String(buf, 0, cnt);
+	}
+
+	public static String read() throws IOException {
+		byte[] ret = new byte[1024];
+		int idx = 0;
+		byte c = Read();
+		while (c <= ' ') {
+			c = Read();
+		}
+		do {
+			ret[idx++] = c;
+			c = Read();
+		} while (c != -1 && c != ' ' && c != '\n' && c != '\r');
+		return new String(ret, 0, idx);
+	}
+
+	public static int readInt() throws IOException {
+		int ret = 0;
+		byte c = Read();
+		while (c <= ' ')
+			c = Read();
+		boolean neg = (c == '-');
+		if (neg)
+			c = Read();
+		do {
+			ret = ret * 10 + c - '0';
+		} while ((c = Read()) >= '0' && c <= '9');
+
+		if (neg)
+			return -ret;
+		return ret;
+	}
+
+	public static long readLong() throws IOException {
+		long ret = 0;
+		byte c = Read();
+		while (c <= ' ')
+			c = Read();
+		boolean neg = (c == '-');
+		if (neg)
+			c = Read();
+		do {
+			ret = ret * 10 + c - '0';
+		} while ((c = Read()) >= '0' && c <= '9');
+		if (neg)
+			return -ret;
+		return ret;
+	}
+
+	public static double readDouble() throws IOException {
+		double ret = 0, div = 1;
+		byte c = Read();
+		while (c <= ' ')
+			c = Read();
+		boolean neg = (c == '-');
+		if (neg)
+			c = Read();
+
+		do {
+			ret = ret * 10 + c - '0';
+		} while ((c = Read()) >= '0' && c <= '9');
+
+		if (c == '.') {
+			while ((c = Read()) >= '0' && c <= '9') {
+				ret += (c - '0') / (div *= 10);
+			}
+		}
+
+		if (neg)
+			return -ret;
+		return ret;
+	}
+
+	private static void fillBuffer() throws IOException {
+		bytesRead = din.read(buffer, bufferPointer = 0, BUFFER_SIZE);
+		if (bytesRead == -1)
+			buffer[0] = -1;
+	}
+
+	private static byte Read() throws IOException {
+		if (bufferPointer == bytesRead)
+			fillBuffer();
+		return buffer[bufferPointer++];
+	}
+
+	public void close() throws IOException {
+		if (din == null)
+			return;
+		din.close();
+	}
+
+	static void print(Object o) {
+		pr.print(o);
+	}
+
+	static void println(Object o) {
+		pr.println(o);
+	}
+
+	static void flush() {
+		pr.flush();
+	}
+
+	static void println() {
+		pr.println();
+	}
+
+	static void exit() throws IOException {
+		din.close();
+		pr.close();
+		System.exit(0);
 	}
 }
