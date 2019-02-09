@@ -35,7 +35,8 @@ public class ccc15s5 {
 			bag[i] = readInt();
 		}
 		Arrays.sort(bag);
-		System.out.println(dp(1, 0, 1, m));
+		println(dp(1, 0, 1, m) + 1);
+		exit();
 	}
 
 	static int dp(int cur, int taken, int left, int right) {
