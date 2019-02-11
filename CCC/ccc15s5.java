@@ -1,5 +1,4 @@
 package Unit1;
-
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -20,23 +19,20 @@ public class ccc15s5 {
 		for (int i = 1; i <= n; i++) {
 			pies[i] = readInt();
 		}
-		m = readInt();
-		for (int i = 0; i < n + 5; i++) {
-			for (int j = 0; j < 2; j++) {
-				for (int k = 0; k < m + 5; k++) {
-					for (int l = 0; l < m + 5; l++) {
-						dp[i][j][k][l] = -1;
-					}
+		for (int[][][] i : dp) {
+			for (int[][] j : i) {
+				for (int[] k : j) {
+					Arrays.fill(k, -1);
 				}
 			}
 		}
+		m = readInt();
 		bag = new int[m + 1];
 		for (int i = 1; i <= m; i++) {
 			bag[i] = readInt();
 		}
 		Arrays.sort(bag);
-		println(dp(1, 0, 1, m) + 1);
-		exit();
+		System.out.println(dp(1, 0, 1, m) + 1);
 	}
 
 	static int dp(int cur, int taken, int left, int right) {
