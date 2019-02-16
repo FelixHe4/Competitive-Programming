@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.PriorityQueue;
 
 public class MigrantMascot {
 	static class Edge implements Comparable<Edge> {
@@ -39,7 +38,7 @@ public class MigrantMascot {
 			arr[c1].add(new Edge(c2, cost));
 			arr[c2].add(new Edge(c1, cost));
 		}
-		Queue<Edge> q = new LinkedList<Edge>();
+		PriorityQueue<Edge> q = new PriorityQueue<Edge>();
 		q.add(new Edge(1, 1 << 30));
 		while (!q.isEmpty()) {
 			Edge cur = q.poll();
